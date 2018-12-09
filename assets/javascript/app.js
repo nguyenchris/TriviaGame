@@ -50,7 +50,7 @@ var gameController = (function () {
   }]
 
   var data = {
-    
+
   }
 
   return {
@@ -68,14 +68,25 @@ var gameController = (function () {
 var uiController = (function () {
 
   var cacheDom = {
-    $startBtn: $('#start')
+    $startBtn: $('#start'),
+    $gamePage: $('.game-page')
   }
+
 
   return {
 
     // Method to retreive all the DOM items
     getDom: function () {
       return cacheDom;
+    },
+
+    
+
+
+    removeStartBtn: function () {
+      cacheDom.$startBtn.animateCss('fadeOut', function() {
+        cacheDom.$gamePage.empty();
+      })
     }
   }
 
@@ -92,9 +103,7 @@ var controller = (function (gameCtrl, uiCtrl) {
   var setupEventListeners = function () {
     var dom = uiCtrl.getDom();
 
-    dom.$startBtn.on('click', function () {
-      console.log('clicked');
-    })
+    dom.$startBtn.on('click', uiCtrl.removeStartBtn)
   }
 
 
@@ -113,6 +122,33 @@ controller.init();
 
 
 
+// extend jquery to include animateCss with a callback function
+$.fn.extend({
+  animateCss: function (animationName, callback) {
+    var animationEnd = (function (el) {
+      var animations = {
+        animation: 'animationend',
+        OAnimation: 'oAnimationEnd',
+        MozAnimation: 'mozAnimationEnd',
+        WebkitAnimation: 'webkitAnimationEnd',
+      };
+
+      for (var t in animations) {
+        if (el.style[t] !== undefined) {
+          return animations[t];
+        }
+      }
+    })(document.createElement('div'));
+
+    this.addClass('animated ' + animationName).one(animationEnd, function () {
+      $(this).removeClass('animated ' + animationName);
+
+      if (typeof callback === 'function') callback();
+    });
+
+    return this;
+  },
+});
 
 // var localArr = ["Greg", "Peter", "Kyle", "Danny", "Mark"],
 //   list = $("ul.people"),
