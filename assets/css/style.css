@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css?family=Muli:400,800');
+
+* {
+  box-sizing: border-box;
+  color: rgba(218, 218, 218, 0.822);
+  font-family: 'Muli', sans-serif;
+}
+
+body {
+  background: rgb(32, 32, 32);
+}
+
+h1 {
+  font-size: 3em;
+  text-align: center;
+  text-shadow: 0.07em 0 black,
+    0 0.07em black,
+    -0.07em 0 black,
+    0 -0.07em black;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+h1 span {
+  color: #ffd93a;
+}
+
+.title {
+  margin-top: 8%;
+  text-align: center;
+}
+
+.title img {
+  height: 250px;
+  width: auto;
+}
+
+.game-page {
+  text-align: center;
+  margin-top: 8%;
+}
+
+#start {
+  width: 75px;
+  height: 45px;
+  background: rgba(230, 230, 230, 0.822);
+  color: black;
+  font-size: 20px;
+  transition: ease-in background .2s;
+  border: none;
+  margin-top: 10%;
+}
+
+#start:hover {
+  background: #ffd93a;
+  border: none;
+}
+
+#start:active {
+  border: none;
+}
+
+
+
