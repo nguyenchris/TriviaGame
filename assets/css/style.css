@@ -60,5 +60,9 @@ h1 span {
   border: none;
 }
 
+iframe {
+  width: 50%;
+  height: 280px;
+}
 
 

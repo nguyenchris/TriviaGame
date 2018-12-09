@@ -1,13 +1,65 @@
 // Game Controller
-var gameController = (function() {
-  var test = 'hello'
+var gameController = (function () {
+
+  // Object containing all questions
+  var questions = [{
+    question: 'What will be alerted?',
+    choices: ['undefined', '2', '6', '8'],
+    src: 'azxfLt8w',
+    answer: 1
+  }, {
+    question: 'What will this code alert?',
+    choices: ['function', 'object', 'number', 'undefined'],
+    src: 'or2u09hb',
+    answer: 1
+  }, {
+    question: 'What is the result?',
+    choices: ['true', 'false', 'TypeError', 'NaN'],
+    src: 'ke4qa10v',
+    answer: 1
+  }, {
+    question: 'What is alerted?',
+    choices: ['number', 'undefined', 'string', 'function'],
+    src: '3dat51zn',
+    answer: 3
+  }, {
+    question: 'What will be printed to the console?',
+    choices: ["['foo', 'bar', 'baz']", "['foo', 'bar', 'baz', 'bin']", "['bin', 'foo', 'bar', 'baz']", "bin"],
+    src: 'mzosabd8',
+    answer: 3
+  }, {
+    question: 'What will be printed to the console?',
+    choices: ['TypeError', 'undefined', 'NaN', '4'],
+    src: 'c7fuzqy5',
+    answer: 2
+  }, {
+    question: 'What value will be alerted?',
+    choices: ['1', '2', '3', 'undefined'],
+    src: 'u7vnw6zb',
+    answer: 1
+  }, {
+    question: 'What will be printed to the console?',
+    choices: ['5', 'Runtime error', 'Nothing', 'Compilation Error'],
+    src: '2h95g04p',
+    answer: 0
+  }, {
+    question: 'What will happen after executing this code?',
+    choices: ['Nothing', "alert '>undefined'", "alert '>1'", "alert '>2'"],
+    src: 'zLk2dpwv',
+    answer: 0
+  }]
+
+  var data = {
+    
+  }
 
   return {
-    testfunc: function() {
+    testfunc: function () {
       return test
     }
   }
 })();
+
 
 
 
@@ -20,9 +72,9 @@ var uiController = (function () {
   }
 
   return {
-    
+
     // Method to retreive all the DOM items
-    getDom: function() {
+    getDom: function () {
       return cacheDom;
     }
   }
@@ -30,14 +82,17 @@ var uiController = (function () {
 })();
 
 
+
+
+
 // Global App Controller
 var controller = (function (gameCtrl, uiCtrl) {
-  
+
   // sets up event listeners for game
-  var setupEventListeners = function() {
+  var setupEventListeners = function () {
     var dom = uiCtrl.getDom();
 
-    dom.$startBtn.on('click', function() {
+    dom.$startBtn.on('click', function () {
       console.log('clicked');
     })
   }
@@ -45,7 +100,7 @@ var controller = (function (gameCtrl, uiCtrl) {
 
   return {
     // initializes game
-    init: function() {
+    init: function () {
       setupEventListeners();
     }
   }
@@ -55,3 +110,18 @@ var controller = (function (gameCtrl, uiCtrl) {
 
 // initilize game
 controller.init();
+
+
+
+
+// var localArr = ["Greg", "Peter", "Kyle", "Danny", "Mark"],
+//   list = $("ul.people"),
+//   dynamicItems = "";
+
+// $.each(localArr, function (index, value) {
+
+//   dynamicItems += "<li id=" + index + ">" + value + "</li>";
+
+// });
+
+// list.append(dynamicItems);
