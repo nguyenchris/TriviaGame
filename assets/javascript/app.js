@@ -50,12 +50,17 @@ var gameController = (function () {
   }]
 
   var data = {
-
+    currentQuestion: 0
   }
 
   return {
-    testfunc: function () {
-      return test
+    getQuestion: function () {
+      if (data.currentQuestion === 0) {
+        return questions[data.currentQuestion]
+      } else {
+        data.currentQuestion++
+        return questions[data.currentQuestion]
+      }
     }
   }
 })();
@@ -69,7 +74,11 @@ var uiController = (function () {
 
   var cacheDom = {
     $startBtn: $('#start'),
-    $gamePage: $('.game-page')
+    $gamePage: $('.game-page'),
+    $answers: $('.answers'),
+    $question: $('.question-header'),
+    $startPage: $('.start-page'),
+    $answers: $('.answers')
   }
 
 
@@ -80,12 +89,41 @@ var uiController = (function () {
       return cacheDom;
     },
 
-    
+    // loads code and question
+    loadQuestion: function (code, q) {
+      var htmlCode, htmlQ, newHtmlCode, newHtmlQ
+
+      htmlCode = "<iframe src='//jsfiddle.net/chriskhalifaa/%src%/embedded/js/dark/' allowfullscreen='allowfullscreen' frameborder='0'></iframe>"
+      htmlQ = "<h2 id='question'>%question%</h2>"
+
+      newHtmlCode = htmlCode.replace('%src%', code)
+      newHtmlQ = htmlQ.replace('%question%', q)
+
+      cacheDom.$question.append(newHtmlCode).append(newHtmlQ);
+
+    },
+
+    loadAnswers: function (arr) {
+      var answers, newHtml
+
+      for (i = 0; i < arr.length; i++) {
+        html = "<button class='button draw-border' data-answer=%index%>%answer%</button>"
+        newHtml = html.replace('%index%', i)
+        newHtml = html.replace('%answer%', arr[i]);
+        answers += newHtml
+      }
+
+      cacheDom.$answers.append(answers);
+    },
+
+
+
+    // loadAnswers: function(data)
 
 
     removeStartBtn: function () {
-      cacheDom.$startBtn.animateCss('fadeOut', function() {
-        cacheDom.$gamePage.empty();
+      cacheDom.$startBtn.animateCss('fadeOut', function () {
+        cacheDom.$startPage.empty();
       })
     }
   }
@@ -103,7 +141,18 @@ var controller = (function (gameCtrl, uiCtrl) {
   var setupEventListeners = function () {
     var dom = uiCtrl.getDom();
 
-    dom.$startBtn.on('click', uiCtrl.removeStartBtn)
+    dom.$startBtn.on('click', function () {
+      uiCtrl.removeStartBtn();
+      getNextQuestion();
+    })
+  }
+
+  var getNextQuestion = function () {
+    var nextQuestion = gameCtrl.getQuestion()
+
+    uiCtrl.loadQuestion(nextQuestion.src, nextQuestion.question)
+    uiCtrl.loadAnswers(nextQuestion.choices);
+
   }
 
 
