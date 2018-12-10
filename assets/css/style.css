@@ -49,30 +49,6 @@ h1 span {
 } 
 
 
-
-
-
-/* #start {
-  width: 75px;
-  height: 45px;
-  background: rgba(230, 230, 230, 0.822);
-  color: black;
-  font-size: 20px;
-  transition: ease-in background .2s;
-  border: none;
-  margin-top: 10%;
-}
-
-#start:hover {
-  background: #ffd93a;
-  border: none;
-}
-
-#start:active {
-  border: none;
-} */
-
-
 iframe {
   width: 50%;
   height: 280px;
@@ -160,13 +136,16 @@ iframe {
   margin-top: 3%;
 }
 
+.score-correct {
+  margin-top: 65px;
+  color: green;
+}
 
-/* .start-page {
-  text-align: center;
-  margin-top: 150px;
-} */
+.score-incorrect {
+  color: red;
+}
 
-#start {
+.start {
   cursor: pointer;
   letter-spacing: 0.05rem;
   line-height: 1.5;
@@ -177,7 +156,7 @@ iframe {
   font-size: 1.2em;
 }
 
-#start:focus {
+.start:focus {
   outline: none;
 }
 

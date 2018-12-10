@@ -56,14 +56,16 @@ var gameController = (function () {
     currentQuestion: 0,
     correct: 0,
     incorrect: 0,
-    timer: 90
+    timer: 45
   }
 
   return {
+    // returns current question data
     getQuestion: function () {
       return questions[data.currentQuestion]
     },
 
+    // update correct/incorrect amount and proceeds with increasing currentQuestion
     updateGame: function (result) {
       if (result) {
         data.correct++
@@ -74,8 +76,9 @@ var gameController = (function () {
       data.currentQuestion++
     },
 
+    // returns data for global controller
     getGameData: function () {
-      var holder = [questions.length, data.currentQuestion]
+      var holder = [questions.length, data.currentQuestion, data.correct, data.incorrect]
       return holder;
     },
 
@@ -84,9 +87,14 @@ var gameController = (function () {
     },
 
     resetTime: function () {
-      data.timer = 90;
-    }
+      data.timer = 45;
+    },
 
+    resetGameData: function () {
+      data.currentQuestion = 0;
+      data.correct = 0;
+      data.incorrect = 0;
+    }
   }
 })();
 
@@ -98,11 +106,10 @@ var gameController = (function () {
 var uiController = (function () {
 
   var cacheDom = {
-    $startBtn: $('#start'),
+    $startBtn: $('.start'),
     $gamePage: $('.game-page'),
     $answers: $('.answers'),
     $question: $('.question-header'),
-    $startPage: $('.start-page'),
     $answers: $('.answers'),
     $answerChoice: $('.answer-choice'),
     $result: $('#result'),
@@ -145,6 +152,7 @@ var uiController = (function () {
       cacheDom.$answers.append(answers);
     },
 
+    // displays if user got the correct answer or not
     displayResult: function (result, answer) {
       cacheDom.$results.show()
 
@@ -157,16 +165,30 @@ var uiController = (function () {
 
     },
 
+    // removes question and answers
     removeQuestion: function () {
       cacheDom.$answers.empty();
       cacheDom.$results.hide();
       cacheDom.$question.empty();
     },
 
-
+    // removes start button and displays timer
     removeStartBtn: function () {
       cacheDom.$startBtn.hide();
       cacheDom.$time.css('visibility', 'visible')
+    },
+
+    // displays times up on page if timer has run to 0
+    displayTimesUp: function (answer) {
+      cacheDom.$result.text('Incorrect!').css('color', 'red');
+      cacheDom.$correctAnswer.text('The answer is: ' + answer)
+    },
+
+    // restarts game and presents score with restart button
+    restartGame: function (right, wrong) {
+      cacheDom.$question.append("<button class='draw-border start'>Restart</button>")
+      cacheDom.$question.append("<h3 class='score-correct'>Correct: " + right + "</h3>")
+      cacheDom.$question.append("<h3 class='score-incorrect'>Incorrect: " + wrong + "</h3>")
     }
   }
 
@@ -183,14 +205,16 @@ var controller = (function (gameCtrl, uiCtrl) {
 
   // sets up event listeners for game
   var setupEventListeners = function () {
-    // var dom = uiCtrl.getDom();
 
-    dom.$startBtn.on('click', function () {
+    // click event listener for start/restart button
+    $(document).on('click', '.start', function () {
+      uiCtrl.removeQuestion();
       uiCtrl.removeStartBtn();
       getNextQuestion();
       setTimer();
     })
 
+    // click event listener for whichever option user chooses
     $(document).on('click', '.answer-choice', function (e) {
       dom.$answers.children().attr('disabled', true)
       $(this).css({
@@ -198,7 +222,7 @@ var controller = (function (gameCtrl, uiCtrl) {
         'color': 'black'
       });
 
-      checkAnswer(e)
+      checkAnswer(e);
     })
   }
 
@@ -210,14 +234,19 @@ var controller = (function (gameCtrl, uiCtrl) {
     uiCtrl.loadAnswers(nextQuestion.choices);
   }
 
+  // checks answer or if time ran out
   var checkAnswer = function (e) {
     var question = gameCtrl.getQuestion();
 
     clearInterval(timer);
 
-    if ($(e.target).attr('data-answer') == question.answer) {
+    if (counter == 0) {
+      uiCtrl.displayTimesUp(question.choices[question.answer]);
+
+    } else if ($(e.target).attr('data-answer') == question.answer) {
       gameCtrl.updateGame(true);
       uiCtrl.displayResult(true);
+
     } else {
       gameCtrl.updateGame(false)
       uiCtrl.displayResult(false, question.choices[question.answer])
@@ -227,38 +256,36 @@ var controller = (function (gameCtrl, uiCtrl) {
     setTimeout(checkGame, 3500);
   }
 
+  // checks if game has reached the end
   var checkGame = function () {
-    var questionsAmt = gameCtrl.getGameData();
+    var gameData = gameCtrl.getGameData();
     uiCtrl.removeQuestion();
 
-    if (questionsAmt[0] - 1 == questionsAmt[1]) {
-      console.log('gameover')
+    if (gameData[0] - 1 == gameData[1]) {
+      uiCtrl.restartGame(gameData[2], gameData[3])
+      gameCtrl.resetGameData();
     } else {
       getNextQuestion();
       setTimer();
     }
   }
 
+  // counter for timer and also displays on page
   var timerCountDown = function () {
-    // var counter = gameCtrl.getTime();
     counter--
     dom.$timer.text(counter);
 
     if (counter == 0) {
-      console.log("times up")
       clearInterval(timer);
+      checkAnswer();
     }
   }
 
+  // sets up timer
   var setTimer = function () {
     counter = gameCtrl.getTime();
     timer = setInterval(timerCountDown, 1000)
   }
-
-
-  // var setTimer = function () {
-  //   timer = setInterval(timerCountDown, 1000)
-  // }
 
 
   return {
