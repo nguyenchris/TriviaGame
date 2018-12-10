@@ -6,7 +6,7 @@ var gameController = (function () {
     question: 'What will be alerted?',
     choices: ['undefined', '2', '6', '8'],
     src: 'azxfLt8w',
-    answer: 1
+    answer: 3
   }, {
     question: 'What will this code alert?',
     choices: ['function', 'object', 'number', 'undefined'],
@@ -50,18 +50,31 @@ var gameController = (function () {
   }]
 
   var data = {
-    currentQuestion: 0
+    currentQuestion: 0,
+    correct: 0,
+    incorrect: 0
   }
 
   return {
     getQuestion: function () {
-      if (data.currentQuestion === 0) {
         return questions[data.currentQuestion]
+    },
+
+    updateGame: function (result) {
+      if (result) {
+        data.correct++
       } else {
-        data.currentQuestion++
-        return questions[data.currentQuestion]
+        data.incorrect++
       }
-    }
+
+      data.currentQuestion++
+    },
+
+    getGameData: function () {
+      var holder = [questions.length, data.currentQuestion]
+      return holder;
+    },
+
   }
 })();
 
@@ -78,7 +91,10 @@ var uiController = (function () {
     $answers: $('.answers'),
     $question: $('.question-header'),
     $startPage: $('.start-page'),
-    $answers: $('.answers')
+    $answers: $('.answers'),
+    $answerChoice: $('.answer-choice'),
+    $result: $('#result'),
+    $correctAnswer: $('#correct-answer')
   }
 
 
@@ -103,28 +119,30 @@ var uiController = (function () {
 
     },
 
+    // loads all choices for user to answer
     loadAnswers: function (arr) {
-      var answers, newHtml
+      var answers = "";
 
-      for (i = 0; i < arr.length; i++) {
-        html = "<button class='button draw-border' data-answer=%index%>%answer%</button>"
-        newHtml = html.replace('%index%', i)
-        newHtml = html.replace('%answer%', arr[i]);
-        answers += newHtml
-      }
+      $.each(arr, function (index, value) {
+        answers += "<button class='button draw-border answer-choice' data-answer=" + index + ">" + value + "</button>"
+      })
 
       cacheDom.$answers.append(answers);
     },
 
+    displayResult: function (result, answer) {
 
-
-    // loadAnswers: function(data)
+      if (result) {
+        cacheDom.$result.text('Correct!')
+      } else {
+        cacheDom.$result.text('Incorrect!')
+        cacheDom.$correctAnswer.text('The correct answer is: ' + answer)
+      }
+    },
 
 
     removeStartBtn: function () {
-      cacheDom.$startBtn.animateCss('fadeOut', function () {
-        cacheDom.$startPage.empty();
-      })
+        cacheDom.$startBtn.hide();
     }
   }
 
@@ -145,14 +163,41 @@ var controller = (function (gameCtrl, uiCtrl) {
       uiCtrl.removeStartBtn();
       getNextQuestion();
     })
+
+    $(document).on('click', '.answer-choice', function (e) {
+      $(this).prop('disabled', true)
+      checkAnswer(e)
+    })
   }
 
+  // Gets next question in question array and then loads the question and choices
   var getNextQuestion = function () {
-    var nextQuestion = gameCtrl.getQuestion()
+    var nextQuestion = gameCtrl.getQuestion();
 
-    uiCtrl.loadQuestion(nextQuestion.src, nextQuestion.question)
+    uiCtrl.loadQuestion(nextQuestion.src, nextQuestion.question);
     uiCtrl.loadAnswers(nextQuestion.choices);
+  }
 
+  var checkAnswer = function (e) {
+    var question = gameCtrl.getQuestion();
+
+    if ($(e.target).attr('data-answer') == question.answer) {
+      gameCtrl.updateGame(true);
+      uiCtrl.displayResult(true);
+    } else {
+      gameCtrl.updateGame(false)
+      uiCtrl.displayResult(false, question.choices[question.answer])
+    }
+
+    checkGame();
+  }
+
+  var checkGame = function () {
+    var questionsAmt = gameCtrl.getGameData();
+
+    if (questionsAmt[0] - 1 == questionsAmt [1]) {
+
+    }
   }
 
 
@@ -168,6 +213,11 @@ var controller = (function (gameCtrl, uiCtrl) {
 
 // initilize game
 controller.init();
+
+
+
+
+
 
 
 
@@ -198,15 +248,3 @@ $.fn.extend({
     return this;
   },
 });
-
-// var localArr = ["Greg", "Peter", "Kyle", "Danny", "Mark"],
-//   list = $("ul.people"),
-//   dynamicItems = "";
-
-// $.each(localArr, function (index, value) {
-
-//   dynamicItems += "<li id=" + index + ">" + value + "</li>";
-
-// });
-
-// list.append(dynamicItems);

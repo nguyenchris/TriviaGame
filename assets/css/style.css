@@ -152,6 +152,11 @@ iframe {
   outline: none;
 }
 
+/* .start-page {
+  text-align: center;
+  margin-top: 150px;
+} */
+
 #start {
   cursor: pointer;
   letter-spacing: 0.05rem;
