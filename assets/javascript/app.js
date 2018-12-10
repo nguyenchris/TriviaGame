@@ -247,7 +247,7 @@ var controller = (function (gameCtrl, uiCtrl) {
 
     } else if ($(e.target).attr('data-answer') == question.answer) {
       gameCtrl.updateGame(true);
-      uiCtrl.displayResult(true);
+      uiCtrl.displayResult(true, question.choices[question.answer]);
 
     } else {
       gameCtrl.updateGame(false)
