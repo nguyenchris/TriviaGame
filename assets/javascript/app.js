@@ -57,7 +57,7 @@ var gameController = (function () {
 
   return {
     getQuestion: function () {
-        return questions[data.currentQuestion]
+      return questions[data.currentQuestion]
     },
 
     updateGame: function (result) {
@@ -94,7 +94,9 @@ var uiController = (function () {
     $answers: $('.answers'),
     $answerChoice: $('.answer-choice'),
     $result: $('#result'),
-    $correctAnswer: $('#correct-answer')
+    $correctAnswer: $('#correct-answer'),
+    $time: $('.time'),
+    $results: $('.results')
   }
 
 
@@ -131,18 +133,27 @@ var uiController = (function () {
     },
 
     displayResult: function (result, answer) {
+      cacheDom.$results.show()
 
       if (result) {
-        cacheDom.$result.text('Correct!')
+        cacheDom.$result.text('Correct!').css('color', 'green');
       } else {
-        cacheDom.$result.text('Incorrect!')
-        cacheDom.$correctAnswer.text('The correct answer is: ' + answer)
+        cacheDom.$result.text('Incorrect!').css('color', 'red');
       }
+      cacheDom.$correctAnswer.text('The answer is: ' + answer)
+
+    },
+
+    removeQuestion: function () {
+      cacheDom.$answers.empty();
+      cacheDom.$results.hide();
+      cacheDom.$question.empty();
     },
 
 
     removeStartBtn: function () {
-        cacheDom.$startBtn.hide();
+      cacheDom.$startBtn.hide();
+      cacheDom.$time.css('visibility', 'visible')
     }
   }
 
@@ -165,7 +176,12 @@ var controller = (function (gameCtrl, uiCtrl) {
     })
 
     $(document).on('click', '.answer-choice', function (e) {
-      $(this).prop('disabled', true)
+      dom.$answers.children().attr('disabled', true)
+      $(this).css({
+        'background': '#ffd93a',
+        'color': 'black'
+      });
+
       checkAnswer(e)
     })
   }
@@ -181,6 +197,7 @@ var controller = (function (gameCtrl, uiCtrl) {
   var checkAnswer = function (e) {
     var question = gameCtrl.getQuestion();
 
+
     if ($(e.target).attr('data-answer') == question.answer) {
       gameCtrl.updateGame(true);
       uiCtrl.displayResult(true);
@@ -189,14 +206,17 @@ var controller = (function (gameCtrl, uiCtrl) {
       uiCtrl.displayResult(false, question.choices[question.answer])
     }
 
-    checkGame();
+    setTimeout(checkGame, 3500);
   }
 
   var checkGame = function () {
     var questionsAmt = gameCtrl.getGameData();
+    uiCtrl.removeQuestion();
 
-    if (questionsAmt[0] - 1 == questionsAmt [1]) {
-
+    if (questionsAmt[0] - 1 == questionsAmt[1]) {
+      console.log('gameover')
+    } else {
+      getNextQuestion();
     }
   }
 
@@ -213,38 +233,3 @@ var controller = (function (gameCtrl, uiCtrl) {
 
 // initilize game
 controller.init();
-
-
-
-
-
-
-
-
-// extend jquery to include animateCss with a callback function
-$.fn.extend({
-  animateCss: function (animationName, callback) {
-    var animationEnd = (function (el) {
-      var animations = {
-        animation: 'animationend',
-        OAnimation: 'oAnimationEnd',
-        MozAnimation: 'mozAnimationEnd',
-        WebkitAnimation: 'webkitAnimationEnd',
-      };
-
-      for (var t in animations) {
-        if (el.style[t] !== undefined) {
-          return animations[t];
-        }
-      }
-    })(document.createElement('div'));
-
-    this.addClass('animated ' + animationName).one(animationEnd, function () {
-      $(this).removeClass('animated ' + animationName);
-
-      if (typeof callback === 'function') callback();
-    });
-
-    return this;
-  },
-});
