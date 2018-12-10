@@ -180,7 +180,8 @@ var uiController = (function () {
 
     // displays times up on page if timer has run to 0
     displayTimesUp: function (answer) {
-      cacheDom.$result.text('Incorrect!').css('color', 'red');
+      cacheDom.$results.show()
+      cacheDom.$result.text("Time's up!").css('color', 'red');
       cacheDom.$correctAnswer.text('The answer is: ' + answer)
     },
 
@@ -242,6 +243,7 @@ var controller = (function (gameCtrl, uiCtrl) {
 
     if (counter == 0) {
       uiCtrl.displayTimesUp(question.choices[question.answer]);
+      gameCtrl.updateGame(false);
 
     } else if ($(e.target).attr('data-answer') == question.answer) {
       gameCtrl.updateGame(true);
@@ -276,7 +278,6 @@ var controller = (function (gameCtrl, uiCtrl) {
     dom.$timer.text(counter);
 
     if (counter == 0) {
-      clearInterval(timer);
       checkAnswer();
     }
   }
