@@ -1,3 +1,6 @@
+// global variable for timer
+var timer;
+
 // Game Controller
 var gameController = (function () {
 
@@ -52,7 +55,8 @@ var gameController = (function () {
   var data = {
     currentQuestion: 0,
     correct: 0,
-    incorrect: 0
+    incorrect: 0,
+    timer: 90
   }
 
   return {
@@ -75,6 +79,14 @@ var gameController = (function () {
       return holder;
     },
 
+    getTime: function () {
+      return data.timer;
+    },
+
+    resetTime: function () {
+      data.timer = 90;
+    }
+
   }
 })();
 
@@ -96,7 +108,8 @@ var uiController = (function () {
     $result: $('#result'),
     $correctAnswer: $('#correct-answer'),
     $time: $('.time'),
-    $results: $('.results')
+    $results: $('.results'),
+    $timer: $('#timer')
   }
 
 
@@ -165,14 +178,17 @@ var uiController = (function () {
 
 // Global App Controller
 var controller = (function (gameCtrl, uiCtrl) {
+  var dom = uiCtrl.getDom();
+  var counter;
 
   // sets up event listeners for game
   var setupEventListeners = function () {
-    var dom = uiCtrl.getDom();
+    // var dom = uiCtrl.getDom();
 
     dom.$startBtn.on('click', function () {
       uiCtrl.removeStartBtn();
       getNextQuestion();
+      setTimer();
     })
 
     $(document).on('click', '.answer-choice', function (e) {
@@ -197,6 +213,7 @@ var controller = (function (gameCtrl, uiCtrl) {
   var checkAnswer = function (e) {
     var question = gameCtrl.getQuestion();
 
+    clearInterval(timer);
 
     if ($(e.target).attr('data-answer') == question.answer) {
       gameCtrl.updateGame(true);
@@ -206,6 +223,7 @@ var controller = (function (gameCtrl, uiCtrl) {
       uiCtrl.displayResult(false, question.choices[question.answer])
     }
 
+    gameCtrl.resetTime();
     setTimeout(checkGame, 3500);
   }
 
@@ -217,8 +235,30 @@ var controller = (function (gameCtrl, uiCtrl) {
       console.log('gameover')
     } else {
       getNextQuestion();
+      setTimer();
     }
   }
+
+  var timerCountDown = function () {
+    // var counter = gameCtrl.getTime();
+    counter--
+    dom.$timer.text(counter);
+
+    if (counter == 0) {
+      console.log("times up")
+      clearInterval(timer);
+    }
+  }
+
+  var setTimer = function () {
+    counter = gameCtrl.getTime();
+    timer = setInterval(timerCountDown, 1000)
+  }
+
+
+  // var setTimer = function () {
+  //   timer = setInterval(timerCountDown, 1000)
+  // }
 
 
   return {
